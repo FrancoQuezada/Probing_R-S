@@ -1,0 +1,86 @@
+010: búsqueda exploratoria de geometrías, protocolo previo a evaluar superficies
+
+Objetivo inalterado: J(z)=max_i E_z[Y_i]-alpha'z; 144 políticas originales,
+45 trabajos/camino, dos servidores, cuatro clases, z=(z3,z4) en [0,1]^2.
+No se sustituye max(EY) por E(max Y). Clases 1 y 2 mantienen su parametrización.
+Las distribuciones de servicio e interarribo son exponenciales parametrizadas
+por MEDIA, no por tasa. La penalización corresponde al tiempo total en sistema.
+REVENUE_SCALE=8 y FAST_ROUTING_COST=.70 permanecen constantes.
+
+Diseño congelado antes del screening: 56 configuraciones, original L000,
+variaciones de un factor y combinaciones discretas con semilla SHA-256 fija.
+DELAY_PENALTY=.42,.84,1.68,3.36; (STDcomplejo,FASTcomplejo)=(8,2.4),(12,2.4),
+(12,1.8),(16,1.8); señales originales o menos informativas; beta_signal=1,2.2,4;
+alpha=(5,2.25),(7.5,3.375),(10,4.5),(15,6.75); interarribo=.6,.8,1.
+No se evalúa el producto cartesiano. Se guardan todos los resultados negativos.
+
+Screening: grilla 5x5, 400 caminos por punto, más Z0=(.12,.10).
+Refinamiento: 8 modelos, grilla 11x11, 3000 caminos, más Z0.
+Alta precisión: 4 modelos incluyendo original, grilla 21x21, 5000 caminos, más Z0.
+Cada etapa usa un banco CRN directo distinto, independiente de búsquedas.
+Las primitivas usan la misma semilla entre configuraciones para facilitar
+comparaciones exploratorias. Bancos compartidos dentro de cada superficie.
+La recompensa bruta simulada se reutiliza exactamente entre modelos que sólo
+difieren en alpha; el costo se resta después. Las señales se regeneran en cada z.
+Checkpoint por punto y por superficie. No se usan estimadores LR en superficies.
+
+Métricas: R_global, R_search sobre [0,.75]^2, mejora respecto de Z0, máximo menos
+mediana de búsqueda, sensibilidad media por unidad de z, distancia a frontera,
+máximos locales aproximados, fracción epsilon=.5 y conjunto competitivo definido
+por J>=maxJ-.15*R_search. Sus componentes se calculan por adyacencia de cuatro
+vecinos en la grilla. Múltiples componentes observadas no prueban multimodalidad
+poblacional. SNR usa diferencias de caminos emparejados de las políticas que
+maximizan las medias en la muestra. Sus SE son condicionales a esa selección y
+los SNR son descriptivos; no corrigen el efecto de elegir máximos muestrales.
+
+Selección exclusivamente geométrica, congelada antes de comparar algoritmos:
+35% rango percentil R_search, 25% R_initial, 20% máximo-mediana, 20% sensibilidad.
+Penalizar por .65 el score cuando el mejor punto es una esquina.
+Conservar original; elegir mayor score no esquina con mejora positiva; después
+región competitiva localizada con contraste al menos mediano; completar mediante
+45% score y 55% distancia mínima normalizada de superficies normalizadas, ubicación
+del máximo y área competitiva. No se fuerza la existencia de múltiples regiones.
+Los máximos son máximos DE GRILLA, nunca certificados globales.
+
+Comparación: Fixed, Fresh, Green, Fresh+Softmax beta=.10 y .50, Fresh+PSoft B=300,
+Green+Softmax beta=.50; cinco repeticiones cada uno. Todas conservan 500 caminos,
+100 iteraciones, eta=.035/sqrt(k), clipping componente +/-15, proyección [0,1]^2.
+Se reutilizan rewards, score/LR, green_data, softmax_weights, bootstrap_weights,
+projected_step de 009/008/003. Adaptador Fixed reproduce one_bank_estimator de
+003 usando el modelo parametrizable y banco único generado bajo (0,0).
+Sin early stopping, línea de búsqueda, centrado de rewards ni control variates.
+Las primitivas por iteración se comparten por CRN entre métodos de una repetición;
+Fixed conserva su banco exclusivo. Historias Green pertenecen sólo a su modelo.
+
+Semillas namespace Probing010-v1, SHA-256 primeros 60 bits+1. Independientes para
+superficies por etapa, búsqueda por repetición/iteración, bootstrap PSoft,
+trazas por repetición, selección final y holdout. La semilla ilustrativa es
+SIEMPRE repetición 1, fijada antes de observar resultados; se guardan las cinco.
+
+Convergencia: todas las 101 decisiones por método se evalúan por simulación
+directa con 1000 caminos CRN por repetición, independientes de la búsqueda,
+selección de escenarios y evaluaciones finales. Bancos independientes entre
+repeticiones. Se cachean decisiones exactamente iguales. Las curvas muestran
+max_i media(Y_i)-cost y pueden presentar optimismo de máximo muestral.
+Media y SD entre las cinco repeticiones; no confundir SD con IC de la media.
+
+Finales y regiones relevantes: selección independiente entre las 144 políticas
+con 10000 caminos, evaluación holdout con otros 50000. CRN entre métodos y puntos
+por repetición. Se incluye mejor punto de grilla, Z0 y cuatro vecinos +/- .1.
+Estimando principal final: valor holdout de la política elegida en selección;
+para una selección imperfecta puede ser menor que J(z). Se informa por separado
+max_i media_holdout(Y_i)-cost como estimación directa con posible optimismo.
+Se separan beneficio bruto, costo, neto, política, SE y distancia al mejor punto
+de grilla reevaluado en el mismo holdout. Esta diferencia no es un certificado.
+Contrastes entre métodos: diferencias emparejadas por repetición, media, SD, SE,
+IC t exploratorio con 4 grados de libertad; sin inferencia confirmatoria tras
+la selección de instancias. Nuevas semillas serían necesarias para confirmación.
+
+El script admite presupuestos explícitos. --quick-test sólo valida ejecución;
+sus resultados están en una carpeta separada y no entran al informe científico.
+--screen --refine --compare --plots controlan etapas. --resume exige mismo
+fingerprint de fuentes y presupuestos. Cambiarlo requiere una nueva carpeta.
+Se conservan resultados previos. Una búsqueda interrumpida antes de guardar su
+repetición se reinicia; puntos/superficies/búsquedas terminadas/trazas parciales
+y evaluaciones terminadas se reutilizan. Reproducción con Julia 1.11.7, BLAS=1,
+8 hilos; Project/Manifest y fuentes se archivan, junto con logs y semillas.

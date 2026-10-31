@@ -1,0 +1,89 @@
+Probing 005–008: protocolo de implementación y ejecución, 22 de octubre de 2026
+
+Los archivos 002, 003, 004 y SimOpt* permanecen sin cambios. Las cuatro nuevas
+entradas incluyen probing_experiments_common.jl, que carga 003 dentro de un módulo
+sin disparar main(). Fixed sigue disponible en 002/003. Las nuevas búsquedas
+conservan el objetivo ex ante max_i E_z[Y_i]−(10,4.5)'z, 45 trabajos por camino,
+las 144 políticas, las distribuciones, los costos, projected_step y el clipping.
+No se usan los objetivos distintos de SimOpt005 ni SimOpt009.
+
+005: 20 repeticiones de Fresh y Softmax beta=.05,.1,.2,.5; n=500, k=100.
+006: 20 repeticiones por n=50,100,200,500,1000; Fresh y beta=.1 y el seleccionado
+en 005 si difiere. Se ejecuta max(100,floor(50000/n)) iteraciones y se usan los
+prefijos k=100 y k=floor(50000/n) para los dos análisis. No se reinicia el paso.
+007: 20 repeticiones de Green y Green+Softmax (.1 y beta seleccionado), n=500,
+k=100. Los valores y las 144 filas de gradientes se agregan por bancos, con el
+factor 1/T y el factor 1/n respectivos; después se calculan los pesos Softmax.
+008: 20 repeticiones nuevas de Fresh, Softmax y PSoft B=300, n=500, k=100.
+PSoft remuestrea columnas completas de Y mediante frecuencias multinomiales;
+cada columna es un SamplePath. Los mismos conteos sirven para las 144 políticas.
+Se reutiliza Y sin evaluate_policy adicional. Se reparte crédito en empates con
+max−valor <= 1e−10 + 1e−12*abs(max). Los gradientes se calculan con el banco
+original; ALPHA se resta una vez. El bootstrap tiene RNG propio.
+
+Semillas: SHA-256 de etiqueta de protocolo, etapa, repetición, flujo e iteración,
+primeros 60 bits +1 (Int64). El método y n se omiten para emparejar primitivas
+dentro de cada repetición y usar prefijos entre n. No se comparte ruido entre
+etapas ni repeticiones. Búsqueda, bootstrap, trazas, selección final y evaluación
+final tienen etiquetas distintas; seeds.csv registra los flujos principales.
+Los flujos bootstrap auxiliares de sensibilidad usan etiquetas adicionales
+sensitivity_B/q y bootstrap_reference, reproducibles con stream_seed().
+
+Evaluación de trazas: 1000 caminos CRN por repetición, independientes de búsqueda,
+en k=0,1,5,10,20,...,100 (006: 14 checkpoints logarítmicos, más los dos finales).
+Se reporta máximo de medias, nunca media de máximos ni log-sum-exp.
+Evaluación final: banco selector de 5000 caminos y otro banco de evaluación de
+30000 caminos, CRN entre métodos y configuraciones dentro de cada repetición.
+Se guardan por separado máximo muestral directo y valor holdout de política
+seleccionada. El primero puede tener sesgo optimista; el segundo mide el valor de
+la política seleccionada y puede subestimar el máximo si selecciona mal.
+La superficie 21x21 de 003 (5000 caminos, CRN) se reutiliza solo como referencia
+visual, con origen explícito. No determina búsquedas ni conclusiones inferenciales.
+
+005 selecciona beta por mayor promedio holdout (desempate por beta menor).
+selected_beta.toml queda congelado antes de 006–008. 005 es exploratorio para
+ese beta; .10 es una comparación prefijada. Las etapas posteriores usan nuevas
+semillas. No se ajustan parámetros usando resultados de estas validaciones.
+
+Unidad independiente de inferencia: repetición completa. Diferencias emparejadas,
+IC t al 95%, ajuste Holm para todos los contrastes finales de cada etapa (ambos
+estimandos y ambos presupuestos), e IC simultáneos Bonferroni conservadores.
+Separación aproximada entre variabilidad de optimización y error MC de evaluación
+mediante los SE emparejados condicionales a las políticas elegidas. No se
+interpretan iteraciones o trabajos como observaciones independientes.
+
+006: objetivo de calidad prefijado J=84.0, informado por resultados anteriores
+003/004, para describir el costo hasta primer cruce en los checkpoints evaluados.
+Se comparan además todas las calidades finales a presupuesto/iteraciones iguales.
+Un cruce descriptivo o una curva suave no prueban superioridad estadística.
+
+008: diagnósticos Softmax .1 y PSoft al mismo punto/banco de la trayectoria PSoft.
+La varianza de gradientes a punto fijo usa k=1, Z0, entre las 20 repeticiones,
+con intervalos bootstrap emparejados sobre repeticiones para cocientes de varianza.
+Las variaciones temporales en puntos distintos no se usan como varianza a z fijo.
+Sensibilidad B=100,300,1000: bancos prefijados k=1 y k=50 de cada repetición,
+10 RNG bootstrap por B y referencia independiente B=10000. Esta referencia
+también tiene error MC. Se informa error de pesos y gradientes; más B reduce
+error bootstrap promedio, sin garantizar menor varianza del gradiente de búsqueda.
+
+Cuatro hilos ejecutan repeticiones/configuraciones independientes; BLAS usa un
+hilo. Los métodos se procesan en orden rotativo y comparten las mismas primitivas.
+Se imputa a cada método el costo de generar esas primitivas, aunque se generan
+una vez. No se cachea Y entre métodos, para mantener comparables sus tiempos.
+Tiempos de pared con contención; los diagnósticos de sensibilidad y evaluaciones
+se reportan aparte y no consumen presupuesto de simulación de búsqueda.
+
+Checkpoints por repetición: búsqueda completa, evaluación completa por método y
+repetición terminada. Escritura atómica con fsync y rename; configuración,
+versiones e SHA-256 de fuentes deben coincidir al reanudar. Una repetición de
+búsqueda interrumpida antes de su checkpoint se reinicia; las repeticiones ya
+completadas y las búsquedas/evaluaciones con checkpoint se reutilizan.
+No se sobrescriben experimentos existentes: se exige --resume o otro --output.
+Las pruebas reducidas se guardan aparte y nunca se presentan como resultados
+finales. COMPLETE.json se crea solo después de resultados, tablas e informe.
+
+Ejecución secuencial reproducible y reanudable:
+  python3 run_probing_005_008.py
+Cada directorio contiene reproduce.txt con el comando exacto de continuación.
+Dependencias: Julia 1.11.7, entorno previo de 003 (Plots), Python 3, numpy,
+pandas, scipy, matplotlib y tomli para Python <3.11.

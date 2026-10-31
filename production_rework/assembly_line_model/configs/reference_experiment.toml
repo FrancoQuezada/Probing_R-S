@@ -1,0 +1,58 @@
+[experiment]
+name = "reference_experiment"
+seed = 20260726
+outer_reps = 5
+inner_train = 20
+inner_eval = 30
+output_dir = "assembly_line_model/experiment_outputs/reference_smoke"
+
+[model]
+horizon = 6.0
+revenue_scale = 7.5
+fast_routing_cost = 0.85
+delay_penalty = 0.5
+probing_costs = [0.6, 1.0]
+
+[[lines]]
+value = 0.35
+prior_mean = -0.10
+prior_variance = 0.75
+diagnostic_noise = 1.6
+max_diagnostic_time = 4.0
+baseline_arrival_rate = 0.60
+arrival_sensitivity = 0.35
+complexity_intercept = -0.80
+complexity_sensitivity = 0.85
+fast_simple_mean = 0.70
+fast_complex_mean = 1.80
+standard_simple_mean = 0.90
+standard_complex_mean = 4.80
+
+[[lines]]
+value = 0.80
+prior_mean = 0.20
+prior_variance = 1.10
+diagnostic_noise = 2.2
+max_diagnostic_time = 5.0
+baseline_arrival_rate = 0.95
+arrival_sensitivity = 0.50
+complexity_intercept = -0.35
+complexity_sensitivity = 1.05
+fast_simple_mean = 0.75
+fast_complex_mean = 2.10
+standard_simple_mean = 1.00
+standard_complex_mean = 5.80
+
+[policies]
+av_values = [0.50, 1.00]
+aq_values = [0.15, 0.50]
+tau_values = [0.15, 0.60, 1.05]
+max_policies = 10000
+
+[probing_grid]
+mode = "step"
+step = 0.5
+max_candidates = 10000
+
+[randomization]
+mode = "independent"

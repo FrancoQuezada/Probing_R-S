@@ -1,0 +1,38 @@
+Extensión dirigida 011, anterior a búsquedas completas de nuevas instancias
+
+El refinamiento inicial de diez configuraciones incluyó siete nuevas. Todas
+presentaron clipping de al menos .50 de componentes Fresh en mejor nodo, con
+30 bancos independientes y paso t20; ver diagnósticos y selección inicial.
+La penalización .84/1.0/1.2 no quedó representada entre los casos nuevos iniciales.
+Para atender el objetivo científico se amplió a tres configuraciones NETAS ya
+calibradas en esos estratos, sin una nueva búsqueda aleatoria ni cambio de métodos.
+Se eligió una por estrato con el mayor score geométrico original y mejor nodo
+interior del screening. Se congeló la lista antes de simular su refinamiento.
+
+Los trece resultados refinados se conservan, incluidos los siete saturados.
+Se repitió el mismo diagnóstico con los mismos estimadores/hiperparámetros.
+Prioridad para ejemplo principal: interioridad >=.10, componentes clipped <.30,
+pasos clipped <.50 y proyección <.20 en ese diagnóstico. Son criterios
+exploratorios previos a búsqueda, no promesas sobre la dinámica posterior.
+Se conserva un segundo caso de geometría diferente; si faltan dos utilizables,
+se retiene un caso más exigente y se informa. Nunca se elige por algoritmo ganador.
+
+La alta precisión de las candidatas suplementarias evalúa nodos independientes
+en paralelo, con idénticos bancos, semillas, orden de políticas/caminos y
+reducciones por punto. No se paraleliza ni modifica projected_step o algoritmos.
+Se conservó el controlador de extensión anterior al cambio de planificación.
+Sólo cambia la concurrencia de evaluaciones de nodos, no la simulación matemática.
+
+Antes de búsquedas se añade validación de los mejores nodos de cada una de las
+cuatro fronteras elegidos en la grilla fina. Se usan las MISMAS muestras de
+selección/holdout de la auditoría geométrica para obtener diferencias emparejadas,
+reutilizando puntos exactos. No se certifica el máximo sobre fronteras continuas.
+Si sólo una de las candidatas nuevas supera con precisión descriptiva a esos
+cuatro nodos, se prioriza como ejemplo; si ninguna lo hace, no se fuerza el éxito.
+Las versiones de selección/recomendación anteriores se archivan; final y semillas
+se congelan antes de ejecutar cualquier búsqueda nueva Ixxxx.
+
+Fuentes adicionales: refinar_compromisos_011.jl y validar_fronteras_011.jl.
+Su SHA y sus decisiones se guardan en configs/, separados del fingerprint del
+motor científico y del diseño inicial. No se alteran 002–010 ni sus resultados.
+Reproducir con python3 run_interior_011.py (incluye extensión y validación).

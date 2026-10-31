@@ -1,0 +1,93 @@
+009b — protocolo fijado antes de nuevas simulaciones
+
+J(z)=max_i E_z[Y_i]−alpha'z; 144 políticas ex ante. Modelo, LR, scores,
+Softmax, PSoft, Green y projected_step se importan sin alterar 002–009.
+Modelos leídos del TOML científico verificado de 009, nunca reconstruidos por
+niveles numéricos. Nuevas semillas: fase 009b-confirmation en el generador SHA
+validado; diagnósticos usan fase 009b-diagnostics, distinta de toda 009.
+
+Puntos A: S001,S010,S111, cuatro por escenario. Z0; máximo 1−frecuencia del
+grupo modal de 009; máximo desvío relativo de gradientes de 009 restante;
+iterado archivado más cercano a la mediana coordenada a coordenada de las
+últimas 20 iteraciones piloto, todas las repeticiones y métodos igualmente.
+Empates: ID del punto o método/repetición/iteración; excluir duplicados 1e−12.
+No se leen objetivos finales ni ganancias de métodos para elegir puntos.
+selected_points.csv y sus entradas se congelan antes de simular.
+
+A: candidatos A nuevos de 3000 caminos; 100 bancos independientes por tamaño
+50,100,500. Candidatos: top5 de A, dos primeros grupos de rewards distintos
+en A, y TODAS las políticas elegidas en los bancos independientes. Se congela
+este conjunto antes de generar referencia B. Las frecuencias de inversión de
+ranking son las de esos bancos independientes; empates se guardan aparte.
+
+Referencia B nueva de 30000 caminos; niveles 3000,10000,30000 son PREFIJOS
+correlacionados. Siempre se completa 30000, sin parada por significación.
+Los IC inferenciales principales usan exclusivamente N=30000. N menores son
+descripciones de precisión, no análisis interinos que autoricen conclusiones.
+Cada política comparte caminos y score. DeltaG=mean((Yi−Yj)*S), covarianza
+de la media=cov((Yi−Yj)*S)/N. Se reutilizan los scores y kernels validados.
+Se guardan covarianzas, IC marginales y Bonferroni simultáneos globales de
+componentes entre TODOS los pares candidatos de los 12 puntos finales.
+Regiones rectangulares y sus límites conservadores de norma son válidas
+también para covarianzas singulares (aproximación CLT/t). Hotelling/F adicional
+solo cuando procede; se corrigen sus pruebas por Holm entre pares finales.
+Los candidatos se eligieron sin observar B; se informa incertidumbre de A.
+
+Bootstrap conjunto B=300 de caminos completos; los mismos conteos sirven para
+todos los valores y gradientes, cosenos y pasos. No son probabilidades
+bayesianas de optimalidad. Grupos observacionalmente equivalentes se verifican
+en A/B; no se declaran idénticos poblacionalmente. Epsilon=.50, tolerancia de
+rewards=1e−8. R1/R2/R3 conservan EXACTAMENTE umbrales y condiciones de 009,
+incluidos Wilson n=500, intervalos conservadores de seis componentes por par,
+coseno bootstrap y referencia epsilon simultánea sobre las 144 políticas.
+R2 es etiqueta operacional, no prueba de igualdad de gradientes. Se comparan
+las etiquetas antiguas solo para puntos iguales; P3 es ubicación nueva.
+
+Pasos t=1,25,50,100: restar alpha una vez, clip ±15, eta=.035/sqrt(t),
+proyección [0,1]^2 mediante projected_step original. Guardar distancias brutas,
+después de clipping y entre decisiones, IC bootstrap, frecuencia de igualdad
+(distancia<=1e−12) y contactos de frontera. Una diferencia de paso .01 sirve
+solo como escala descriptiva preestablecida; no prueba equivalencia práctica.
+No se afirma igualdad por falta de significación.
+
+B: S000,S001,S010,S101,S111,20 repeticiones NUEVAS cada uno, cinco métodos,
+500 caminos,45 trabajos,100 iteraciones,Z0=(.12,.10),sin early stopping.
+S101 es validación prospectiva de una hipótesis exploratoria previa.
+CRN por escenario/repetición/iteración, cada método materializa su propio z.
+Historia Green protegida por ID y hash de modelo. Reutilizar search de 009
+sin reemplazar estimadores. Checkpoints completos por escenario/repetición/
+método y evaluaciones; búsquedas interrumpidas antes de completarse se reinician.
+
+Convergencia: TODOS los iterados 0:100, banco de 1000 caminos directo CRN
+entre métodos/iteraciones dentro de repetición, INDEPENDIENTE entre repeticiones.
+Guardar J estimado y SE MC del ganador finito (no elimina sesgo del hard-max).
+Curvas: media±SD y, en otra figura, IC t95% puntuales entre repeticiones.
+Mejor visitado=max sobre estos 101 puntos evaluados; optimista por múltiples
+iterados. Últimas20=t81:100; media/SD temporal condicional al banco compartido,
+no 20 observaciones independientes. Variación total z usa todos los pasos.
+
+Finales: selector5000 y holdout30000, ambos independientes de búsqueda y
+convergencia y entre sí; CRN entre métodos, independientes entre repeticiones.
+Holdout de política elegida es métrica principal; hard-max muestral secundario.
+Registrar costo, beneficio bruto, SE MC, política, z y tiempos separados.
+
+Familia principal: EXACTAMENTE 15 contrastes holdout (Softmax−Fresh,
+PSoft−Fresh,GreenSoftmax−Green)×5 escenarios, Holm global alfa=.05.
+IC t95% marginales y Bonferroni globales, SD/SE y proporción positiva.
+Green−Fresh y hard-max son familias SECUNDARIAS separadas y etiquetadas.
+No agrupar iteraciones como repeticiones. No inferir equivalencia de no rechazo.
+Asociaciones estructura/ganancia sobre cinco escenarios son descriptivas.
+A cubre tres escenarios; S000/S101 conservan diagnósticos antiguos claramente
+identificados, sin presentar precisión30000 inexistente para esos modelos.
+No es factorial completo: no estimar efectos A/B/C independientes o causales.
+
+Oracle: reutilizar archivos de 009 solo tras verificar modelo, configuración,
+semillas y SHA, copiarlos sin cambiar parámetros; S000 tiene 11x11, otros
+escenarios usan su referencia3x3. Son superficies auxiliares, no nuevas
+evaluaciones finales ni fuentes de inferencia confirmatoria.
+
+Configuración y fuentes congeladas determinan SHA completo; repeticiones y
+filtros de escenarios son planes operacionales ampliables. --quick-test se
+identifica explícitamente y usa presupuestos reducidos en otra carpeta. Se
+auditan fuentes y resultados 002–009 sin escribirlos. Tiempos concurrentes,
+BLAS=1, diagnósticos y payloads compartidos imputados: no benchmark aislado.

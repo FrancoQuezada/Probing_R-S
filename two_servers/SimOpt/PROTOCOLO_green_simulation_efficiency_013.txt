@@ -1,0 +1,54 @@
+I0252: Fresh/Green simulation-efficiency protocol, frozen before new searches.
+New configurations: Fresh-100, Fresh-250, Green-100, Green-250; five original
+independent seed streams, 100 updates. Controls Fresh-500/Green-500: unchanged
+011 decisions/gradients and 012 exact-replay clock measurements. No Softmax.
+Model: exact configs/main_instance_parameters.toml from 011; 144 policies,
+45 jobs/path, z0=(.12,.10), eta=.035/sqrt(t), gradient clipping +/-15,
+projection [0,1]^2. All mathematical kernels are the original R/C functions.
+Only new bank size changes. R.primitive_bank generates paths in a serial loop;
+the same 010 compare/search seed gives nested prefixes of 100/250/500 paths.
+Check every replication/update, field by field, before claiming exact CRN.
+Different decisions materialize different signals from the same primitives.
+
+Main quality: Jhat(z)=max_i mean(Y_i)-alpha'z on the independent 011/012
+1000-path trace bank, with the same bank at every point/reference within rep.
+The policy is one ex-ante rule, never a maximum separately on each path.
+Reference (.70,.70) and original control values are retained exactly.
+Predefined equal-iteration checkpoints: 20,50,100. Equal search budgets:
+10000 (all six), 25000 (N=250,500), 50000 (N=500). No extrapolation.
+Native accumulated quality A(T)=sum_{t=0}^T Jhat(z_t)/(T+1).
+Budget-area quality Q(B)=integral_0^B Jhat(z_floor(b/N)) db / B:
+piecewise constant last available decision, Q(0)=Jhat(z0). At B=N*t>0,
+Q(B)=sum_{k=0}^{t-1}Jhat(z_k)/t. This is descriptive search quality,
+not operational reward. Compare Q at equal B, not A(100) across different N.
+Exploratory comparability margin .5, with 1 and 2 sensitivity, chosen from
+the existing epsilons; report paired differences and each seed, no claim
+of statistical noninferiority from five repetitions.
+
+Thresholds .5,1,2; first hit and first five-decision window. Store both start
+and confirmation; CDF/RMST use confirmation, missing tau for censored runs.
+Freeze selected candidate windows before independent 5000-path rechecks.
+Recheck exact equal-budget endpoints on this same 012 independent validation
+bank too. These are extra evaluations, never search paths or new full taus.
+Supplemental final selected-policy holdout: independent 10000-path selector
+and 50000-path holdout, same original seeds; label as a distinct estimator.
+
+Search accounting: N new paths/update, N*t cumulative, 144*N policy-path
+evaluations/update. Green has t banks and N*t available historical paths.
+LR processing, historical reuse, audits, evaluation and instrumented replays
+are excluded from search trajectories. Keep an external workload ledger.
+ESS=(sum L)^2/sum L^2 over all N*t historical/current path weights, with
+L=exp(clamp(original logLR,-35,35)). Equal-bank coefficient is 1/t;
+normalized LR bank mass is descriptive and is not an estimator coefficient.
+Quantiles, truncation and bank mass are recorded after search timing.
+Gradient precision is not determined by this ESS alone.
+
+Timing: Julia 1.11.7, BLAS1, kernels and new search runs sequential. Same
+012 wall-clock setup/update scope; excludes compilation/warmup, external
+evaluation, extra LR diagnostics, serialization, plots, reports. Historical
+clock is a subset of gradient_seconds and must not be added a second time.
+Keep 012 control primary times. Five separate Green-500 profiling replays
+are required for the previously unrecorded history-clock split; verify all
+decisions/gradients exactly and label clocks separately, not extra replicates
+or extra search budget. Different sessions/shared OS: descriptive benchmarks.
+All 002--015 original sources and outputs are protected by SHA256 snapshot.

@@ -1,0 +1,106 @@
+011 — Alto contraste, costos marginales calibrados y geometrías interiores
+
+Se conserva exactamente J(z)=max_i E_z[Y_i]-alpha'z, dos servidores, 144
+políticas ex ante, 45 trabajos/camino. No se sustituye max(EY) por E(max Y).
+No se alteran modelos/algoritmos anteriores, projected_step, paso, clipping,
+REVENUE_SCALE=8 ni incertidumbre. Se llama al código original 010/009/008/003.
+Todas las superficies y diferencias finitas usan simulación DIRECTA, nunca LR.
+
+Diseño previo al resultado: 48 configuraciones operacionales en el vecindario
+pedido, base L025, variaciones de un factor y bloques categóricos balanceados
+con semilla fija. Factores: delay=.84,1,1.2,1.5,1.8,2.2; STD complejo=10,12,14;
+FAST complejo=1.8,2.4; beta_signal=2.2,3,4; señales originales o menos informativas
+EXACTAS de 010. Medias exponenciales, no tasas. No cambian tiempos simples,
+interarribo .8 ni clases 1/2. L000/L025/L026 se incluyen como controles obligatorios.
+
+Calibración: 5000 caminos CRN por configuración física, comunes a todos los
+puntos. Seis referencias (.3,.3),(.4,.5),(.5,.5),(.6,.65),(.7,.7),(.75,.8).
+Diferencias centrales h=.05 y .10; se conserva la política de máximo de medias
+en cada punto, no un máximo de rewards por camino. SE condicional de la
+diferencia usa rewards emparejados de las políticas seleccionadas. No ajusta
+por selección del máximo muestral y se informa como diagnóstico exploratorio.
+Pendientes utilizables si g05>2.5SE05, g10>1.96SE10 en ambas componentes y
+|g05-g10|<=2SE(g05-g10)+.25max(|g05|,1). El SE de la sensibilidad utiliza el
+mismo emparejamiento CRN, con su covarianza. Esto no demuestra diferenciabilidad.
+Se guardan cambios de política y segundas diferencias diagonales, con sus SE.
+
+Se generan ALPHA=(g3,g4) con factores conjuntos 1,.8,1.2 y factores cruzados
+(.8,1.2),(1.2,.8), todos predefinidos. Se conservan costos fijos (5,2.25) y
+(10,4.5) como controles en las físicas exploradas. No se aceptan costos negativos
+ni pendientes imprecisas; esos resultados se conservan, sin crear candidatos
+calibrados a partir de ellos. Se congelan TODAS las configuraciones netas antes
+de screening. Los candidatos de costo comparten exactamente la misma V simulada.
+El número de superficies netas puede exceder el de físicas, sin nuevas simulaciones.
+
+Screening: 5x5 con 500 caminos y Z0, bancos independientes de calibración.
+Refinamiento: 10 configuraciones, 11x11 con 3000 caminos. Incluye los tres
+controles. Se selecciona por 30% percentil R_search, 20% R_initial, 20% 1-área
+competitiva MC, 20% pérdida de vecinos y 10% distancia de frontera. Score x.4
+si interioridad<.1. Se agregan diversidad geométrica (25% de utilidad) y pequeño
+bonus a calibrados (.03), evitando duplicar la misma física cuando sea posible.
+No se usan resultados de algoritmos. D=[0,.85]^2 caracteriza, no restringe z.
+
+Tolerancias de región competitiva: .5,1,2 y eps_MC=max(.05,2*mediana SE emparejado
+mejor nodo/vecinos adyacentes). Se informa área, dispersión RMS, diámetro,
+componentes por cuatro vecinos y fracción relativa a .1R_search. La escala MC
+varía con la fase; no se equipara un conjunto definido con .5 a uno con eps_MC.
+Se registran pérdidas de desplazamientos .1/.2 cuando coinciden con la grilla,
+curvaturas diagonales y cambios de política. No se certifican óptimos globales.
+
+Diagnóstico previo: en las 10 configuraciones refinadas, Z0, mejor nodo y ancla;
+30 bancos independientes de 500 caminos, mismos estimadores originales. Fixed
+repondera un banco bajo cero; Green/GreenSoftmax se diagnostican con una historia
+de UN banco, equivalente a su inicialización, no a toda su evolución posterior.
+Se consideran t=1,20,50,100 con projected_step original: eta=.035/sqrt(t), clip
+componente +/-15, dominio [0,1]^2. Se guardan fracción de componentes e iteraciones
+clipped, proyección efectiva, contacto con frontera y norma del paso. Saturación
+penaliza el score preliminar en .35 clip+.25 proyección en t20 en mejor nodo,
+sin descartar automáticamente modelos. L026 siempre conserva el caso de estrés.
+
+Alta precisión: inicialmente cinco configuraciones (tres controles y dos nuevas),
+21x21 con 5000 caminos. Si una nueva pierde interioridad .1, se permiten hasta
+dos suplentes elegidas por geometría/diagnóstico, antes de ejecutar algoritmos.
+Auditoría geométrica independiente: selector 10000 y holdout 50000, CRN dentro
+de cada modelo; mejor nodo, Z0, ancla, ejes +/- .1/.2, diagonales .1 y proyecciones
+a las cuatro fronteras. Se guardan pendientes NETAS y segundas diferencias con
+SE emparejados, y política seleccionada. Un slope cercano a cero no prueba máximo.
+La selección final y la recomendación principal se congelan ANTES de comparar.
+
+Métodos originales: Fixed, Fresh, Green, Softmax .10/.50, PSoft B=300,
+GreenSoftmax .50. Cinco repeticiones, 500 caminos, 100 iteraciones, Z0=(.12,.10),
+45 trabajos, mismos pasos y clipping. Se reutilizan X.search/X.evaluate_repetition
+EXACTOS de 010. Las semillas de búsquedas nuevas usan namespace original de
+ese ejecutor con IDs Ixxxx inéditos; las de calibración/diagnósticos/superficies
+usan Probing011-v1, SHA256 primeros 60 bits+1. No hay colisiones por compartir CRN.
+
+Las referencias 010 se reutilizan sólo si modelo, semillas y presupuestos son
+idénticos: superficies refinadas/finas y cinco búsquedas/evaluaciones de controles.
+Su material pertenece a semillas 010, independientes de la selección 011. Se
+copian los resultados al nuevo directorio y se conserva procedencia explícita.
+Los nuevos costos de la misma física reutilizan V sin reponderación ni simulación
+adicional. Se regresa bit a bit contra superficies y búsquedas 010 para controles.
+
+Convergencia: 101 puntos, simulación directa de 1000 caminos independientes de
+búsquedas, CRN común entre métodos dentro de cada repetición. Bancos distintos
+entre repeticiones. Finales: selección con 10000, holdout independiente de 50000.
+El valor holdout de una política elegida y el máximo muestral directo se reportan
+separados: son estimandos distintos, con posibles errores de selección.
+
+Contrastes C(t) con/sin Fixed; C_all, media t20:100 (81 puntos), máximo de cola,
+media t50:100, t80:100 y final. Son descripciones del banco finito, no pruebas de
+superioridad sistemática. Se guardan distancias de decisiones y trayectorias,
+variación total, clipping por componente/paso, proyección y contacto de frontera.
+
+Auditoría temporal en repetición ilustrativa predefinida 1: t20,50,80,100 y
+máximos de separación global/de cola sin Fixed. Pares max-min elegidos en la
+traza antes del nuevo selector/holdout 10000/50000. Se conserva signo contrario
+si ocurre. Endpoint y auditorías anteriores se reutilizan cuando coinciden
+exactamente. Los demás son bancos nuevos independientes. SNR 0/0 es no definido.
+Esta validación de puntos no convierte C_tail del banco finito en una media
+poblacional exacta de máximos. Con cinco repeticiones la inferencia es exploratoria.
+
+Checkpoints por punto, física, fase, instancia, método de traza y repetición.
+Fuentes científicas y presupuestos definen fingerprint. Cambiarlos requiere otra
+carpeta. El análisis y los gráficos registran SHA separados, permitiendo corregir
+presentación sin recalcular simulaciones. --quick-test es sólo prueba, separada.
+Nunca se sobrescriben 002–010 ni sus resultados; se verifica SHA de todos ellos.

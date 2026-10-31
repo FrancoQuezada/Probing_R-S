@@ -1,0 +1,77 @@
+I0252: historical-bank Green variants (fixed before full execution)
+
+Execution path: 016 -> 012 -> 011 -> 010 -> probing_regime_model -> 003.
+Conceptual predecessor: ../2serversModel/probing_three_searches_crn_oracle_surface.jl
+(5000 paths, 45 updates, other alpha, beta and model). It is NOT I0252.
+I0252 settings copied exactly from 011: z0=(.12,.10), N=500, 45 jobs,
+144 policies, 100 updates, eta=.035/sqrt(k), componentwise gradient clip +-15,
+projection [0,1]^2. No early stopping. Only reps 1,2,3 are requested.
+Objective J(z)=max_i E_z[Y_i]-alpha'z, one common ex-ante routing policy.
+Not E[max_i Y_i], not the SimOpt009 objective, not a new two-stage training model.
+
+Methods: original Green; windows 5,10,20 including current; exponential
+rho=.7,.9,.95 over all banks, bank weights a proportional to rho^(t-h);
+filters kappa=1,2,5. Same bank weights for all policy values and the selected
+policy's LR-score gradient. Probing cost and its derivative subtracted once.
+Uniform retained-bank estimators delegate to original R.green_data, preserving
+its original floating-point summation order. rho=1 delegates identically.
+No self-normalized importance sampling. ESS normalization is diagnostic only.
+Likelihoods and scores evaluated at target z and each actual bank's generating z.
+Original probability clamp [1e-12,1-1e-12], log LR clamp [-35,35] unchanged.
+LR clipping can bias values/gradients. Existing derivative at probability clamp
+boundaries is preserved. Clipping counts reported, no observation-level filtering.
+
+Filter: original full Green provisional policy; corrected sample variance of
+Y_provisional*clipped_LR in EACH bank at CURRENT target z; retain V_h <= kappa*V_current.
+The non-strict inequality resolves zero-variance ties: if V_current=0 retain
+zero-variance banks plus current; always retain current regardless of threshold.
+Invalid or nonfinite LR, score, reward, variance or threshold raises explicitly;
+no fabricated replacement and no individual observation removal. Recompute one
+common best policy and gradient on retained banks; it may differ from provisional.
+Selection is adaptive to the observed rewards and can bias the estimator.
+
+CRN: unchanged X.seed(I0252,compare,rep,search,k), independent of method.
+Every method generates 500 new paths each update, totaling 50000 per search,
+1500000 across 30 full searches. Historical processing generates NO paths.
+Rolling implementation retains discarded banks in memory for accounting only;
+they make no contribution to the estimator. Retained paths and historical reuse
+exclude neither observations nor parts of a bank. Reuse excludes the current bank.
+
+Diagnostics use the ACTUAL final selected policy, with filter variances and
+provisional policy stored separately. bank CSV has weights, rejection identities,
+sample variances of Y*LR and Y*LR*score_j. iteration variance is the weighted
+average of within-bank sample variances (NOT variance of LR alone). The additional
+sum_h a_h^2*s_h^2/n_h is a descriptive mean-variance proxy, not a valid adaptive
+optimization uncertainty estimate. ESS uses observation coefficients a_h*L_hj/n_h:
+ESS=(sum c)^2/sum c^2. Raw unweighted pooled LR ESS stored separately. Neither
+is the retained observation count or a guarantee of gradient precision.
+
+Times: searches sequential, BLAS=1, warmup tests excluded. Primary optimization
+clock includes generation, materialization, 144-policy rewards, original local
+data work, bank selection/weighting (including ALL filter variance calculations),
+Green estimator, original projected step and core diagnostics. Additional moment
+diagnostics, CSV/checkpoint I/O and external evaluations excluded and timed
+separately. Diagnostic allocation/GC can influence subsequent search times;
+OS not isolated; comparisons descriptive, not controlled performance benchmarks.
+
+Final independent evaluation: original per-rep selector seed, 10000 direct paths;
+select one policy for each endpoint. Original independent holdout seed, 50000
+direct paths for THAT fixed selected policy; same primitives across endpoints.
+No LR. Conditional MC SE=s/sqrt(50000), normal 95% CI, no policy reselection on
+holdout. It evaluates the policy selected using the independent selector, which
+can fall short of max_i E[Y_i]. Paired endpoint differences use holdout CRN.
+Trace plots: independent fixed 1000-path CRN bank, direct max of policy means;
+selection bias remains in trace curves and conditional SE is not post-selection
+inference. Never substitute those traces for final holdout estimates.
+Across-rep SD measures variation across three optimization/evaluation replications;
+it differs from conditional within-holdout MC SE. Three seeds are exploratory.
+Surface is the archived 21x21, 5000-path direct CRN surface; no recomputation,
+no certification of a global optimum. All figures PNG and PDF.
+
+Small tests before full runs: all-bank limits exact, current LR exactly 1,
+normalized nonnegative weights, same policy in value and gradient, current kept,
+zero variance ties, invalid inputs explicit errors, fixed-seed search reproducible.
+Quick test: all ten methods, rep1, 6 updates, N=500 preserved, evaluation only
+100/500 paths and trace100. Separate quick_test folder; full prefixes must agree.
+Checkpoints per complete search, per evaluation point, per final endpoint and rep.
+Resume only identical implementation/model fingerprint. No old results overwritten.

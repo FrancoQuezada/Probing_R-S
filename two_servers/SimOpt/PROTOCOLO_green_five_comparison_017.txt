@@ -1,0 +1,66 @@
+I0252: homogeneous five-method comparison, reps 1,2,3 EXCLUSIVELY.
+
+Only new production optimizations: Green Exponential rho=.5, 3 x 100 updates.
+Reuse original Green, Variance kappa2 and Rolling W5 from experiment016.
+Reuse Green+Softmax beta=.5 from experiment011 I0252 (NOT standalone003).
+Never invoke old experiment entrypoints, old search methods or old test suites.
+016 is included only as definitions; its estimator and search are called with
+the new Exp50 configuration. No combinations and no other parameter values.
+
+Compatibility established BEFORE new optimization:
+same model digest 1ecdc3dc6161f7783a79a4e9d575f1f753a6fbb1ff4fb0d9337af56d5da54fd7,
+same 144 threshold policies, model beta4 (signal quality), 45 jobs, N=500,
+z0=(.12,.10), 100 updates, .035/sqrt(k), component gradient clip +-15,
+projection [0,1]^2, no early stopping. Probing alpha unchanged.
+All methods X.seed(I0252,compare,rep,search,k) with method absent for CRN.
+Original Green016 is bitwise identical to Green011, including gradients.
+Softmax012 timing archives reproduce the 011 search exactly; timings are reused.
+Standalone003: different model and RNG, alpha=(10,4.5), beta_model2.2,
+different service means, delay penalty and hit/false probabilities; its Softmax
+uses FRESH banks. It is incompatible and excluded. Its package environment and
+softmax_weights definition may be reused without using its experimental outputs.
+
+Objective J(z)=max_i E_z[Y_i]-alpha'z. LR and target-z score unchanged:
+logLR clipped [-35,35], probabilities clamped [1e-12,1-1e-12]. No SNIS.
+Exp50 retains ALL banks. At update k, bank h=1,...,k has weight
+a_h=.5^(k-h)/sum_{j=1}^k .5^(k-j).
+Equivalently use user indices t=k-1,tau=h-1. Same normalized bank weights in
+all policy values and selected-policy gradient; cost subtracted exactly once.
+No bank or observation filtering. Nominal retention grows; weights decay rapidly.
+
+Softmax definition: policy weight q_i proportional exp(.5*(v_i-max(v))).
+Beta is a multiplying inverse temperature, not a divisor/temperature .5.
+Gradient G' q-alpha corresponds to LSE with beta=.5; original algorithm intact.
+Its archived objective_internal is actually max(v)-cost, not the LSE surrogate.
+Do not label that field as LSE or compare a hypothetical smooth value with hard
+max. Independent direct hard-max curves use the SAME 1000-path CRN trace bank,
+original per-rep trace seed. Old compatible evaluations reused, only missing
+Exp50 points simulated. Traces take max of sample means; selection bias possible.
+Rows: diagnostics update k evaluate target z^(k-1) and produce next z^k;
+coordinates/direct traces indexed t=0,...,100 at z^t.
+
+Final evaluation identical across ALL 5: independent direct selector10000 paths
+selects a single policy, independent direct holdout50000 paths evaluates it.
+Original per-rep selection/holdout streams, CRN between endpoints, NO LR.
+Old final scalar and paired evaluations are already equivalent; reuse them.
+Only three Exp50 final endpoints receive new selector/holdout simulations.
+Paired difference to Green uses same underlying holdout and cost correction.
+95% CI normal, conditional on optimized decision and independently selected
+policy. Across-three-rep SD includes optimization plus evaluation variability;
+it differs from MC SE within a holdout. Three seeds do not establish superiority.
+
+Timing: 012 archived Softmax, 016 archived other methods, 017 new Exp50;
+all sequential BLAS=1, warmed up; optimization kernels incl bank work, projected
+updates; external eval, optional moments and IO excluded. Different sessions,
+fixed order and diagnostic/GC differences limit hardware-time comparability.
+No replay of old optimizations to improve timing comparability is authorized.
+
+Basic tests only rho=.5: normalized weights, all banks, current LR=1,
+independent weighted sums and same selected policy gradient, reproducibility
+of two 3-update prefixes with N=500. Test paths separate from production budget.
+No tests or optimizations at other rho or rep4/rep5.
+Then 3 production searches, 150000 new paths. 12 old searches reused (600000
+logical paths, zero new optimization paths). Whole-search checkpoints and
+independent evaluation checkpoints permit resume without production reruns.
+Surface from016/011 copied exactly; no surface simulations.
+All artifacts in new017 folder; SHA manifest verifies old files unchanged.

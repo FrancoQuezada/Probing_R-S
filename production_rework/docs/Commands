@@ -1,0 +1,16 @@
+RUN heatmap
+
+julia --project=assembly_line_model \
+  assembly_line_model/examples/plot_grid_heatmap.jl \
+  --input=assembly_line_model/experiment_outputs/dense_grid_crn/candidate_results.csv \
+  --metric=objective \
+  --output=assembly_line_model/experiment_outputs/dense_grid_crn/objective_heatmap.png
+
+RUN Grid
+
+julia --project=assembly_line_model \
+  assembly_line_model/examples/run_grid_experiment.jl \
+  --config=assembly_line_model/configs/reference_experiment.toml \
+  --seed=20260726 --outer-reps=100 --inner-train=300 --inner-eval=1000 \
+  --z-step=0.05 \
+  --output-dir=assembly_line_model/experiment_outputs/dense_grid_current

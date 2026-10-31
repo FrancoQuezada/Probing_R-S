@@ -1,0 +1,67 @@
+I0252: five Green methods, n250 versus archived n500, reps 1,2,3 only.
+15 NEW n250 searches; 100 updates,250 new45-job paths each (25000/search).
+Only batch size changes. No n500 optimization replay. No old files modified.
+
+Unchanged model/policy/step/seed settings from017:
+model SHA1ecdc3dc6161f7783a79a4e9d575f1f753a6fbb1ff4fb0d9337af56d5da54fd7;
+144 threshold policies; z0=(.12,.10); alpha=(8.529251033547421,10.083855971068047),
+signal beta4, eta=.035/sqrt(k), gradient component clip±15, projection[0,1]^2.
+No early stopping. Search seed X.seed(I0252,compare,rep,search,k), independent
+of method and batch size. n250 is a prefix of the same primitive stream.
+
+Implementation reuse, no new optimizer/estimator implementation:
+Green Original, Exp rho.5, Variance kappa2, Rolling W5 call016.V.search with n250.
+Softmax beta.5 calls012.A.timed_method with n250, same original010/R kernels.
+Uniform history, geometric normalized bank weights, bank variance filtering
+and rolling definitions unchanged. Softmax weights proportional exp(.5*(v-max(v)))
+over policies; gradient G' q-alpha. Model signal beta and Softmax beta distinct.
+LR target/generator and target score unchanged; logLR clipped[-35,35],
+probabilities clamped[1e-12,1-1e-12]; no SNIS; cost subtracted once.
+
+Basic tests use only n250 optimizer prefixes; verify fixed-seed reproduction,
+weight normalization/current bank LR1, exact Softmax definition. Full rep1
+prefixes must match. n250 Green results also compared to independently archived
+n250 Green013 for exact coordinates/core, without reexecuting that experiment.
+Tests/warmup separate from production budget375000. No rep4 or rep5.
+
+Old n500 searches/final scalars/traces/times read from017/016/012/011.
+Final n250 evaluation: independent selector10000 plus independent holdout50000,
+original reference seeds, CRN across BOTH n values and methods within rep.
+No LR in evaluation, original hard-max policy selection for all methods.
+For paired differences reconstruct ONLY the fixed selected-policy n500 Softmax
+holdout payoff vector using original seeds. Scalar objective/SE must match
+archives. No new policy selection or optimization for n500. Other old payoff
+vectors reused. Report within-n differences to Green and same-method n250-n500
+paired SE/normal95% intervals. Across-three-rep SD differs from within-holdout MC SE.
+
+Independent direct traces N1000, same original trace seed for both n values.
+n500 trace rows copied exactly. n250 points evaluated directly; compatible
+existing same-z evaluation caches may be reused. Hard max of sample means
+can have selection bias. Internal Softmax field is hard max, NOT LSE.
+
+Contribution diagnostics: other methods' n500 moments already archived; reuse.
+Softmax moments absent: reconstruct its historical banks at FIXED archived
+decisions for each n, calling original R.green_data/softmax/combine. Assert
+every gradient/ESS/policy equals actual run, and NEVER call a projected update.
+This diagnostic work regenerates150000 n500 and75000 n250 primitives; it is
+NOT optimization and is NOT charged to search budgets/times. Hard objective
+contribution Y_best*LR variance for all methods; Softmax gradient contributions
+use actual mixture reward (sum_i q_i Y_i)*LR*score, not a fictitious hard-policy
+gradient. Variance is bank-weighted average within-bank sample variance.
+Mean-variance proxy sum a_h²*s_h²/n_h descriptive only under adaptive reuse.
+Compare also empirical across-three-rep gradient spread; targets/policies differ,
+so do not interpret differences as isolated estimator variance at fixed z.
+
+Timing: sequential BLAS1, estimator warmup, extra moments/evaluation/IO excluded.
+Old/new sessions and GC/instrumentation differ; observed speedups descriptive.
+Fixed100 updates means halving n also halves total budget; this is NOT an equal
+total-budget experiment and cannot isolate only minibatch size or guarantee savings.
+
+ALL comparative figures: two HORIZONTAL metric panels, left n500, right n250,
+five same colors/styles/markers per panel, common legend, same limits/scales.
+Trajectories reuse original441-node21x21 I0252 CSV. Original010.background
+contourf inferno(levels24) plus black contour(levels12,.35 width,.5 alpha),
+same levels/color range both panels, axes z3/z4 [0,1], common colorbar.
+No imshow/pcolormesh, surface simulation, external interpolation or resampling.
+PNG/PDF; objective, final uncertainty, times, coordinates, ESS, variance and
+retention plots all use this panel rule. Three optimization reps exploratory.

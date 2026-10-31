@@ -1,0 +1,74 @@
+012: frozen I0252 anytime/budget analysis, protocol v1
+
+Source of truth: 011 configs/models.toml[I0252], checked against
+configs/main_instance_parameters.toml. Preserve all earlier files. Objective
+max_i E_z[Y_i]-alpha'z, 144 ex-ante policies, never pathwise max or log-sum-exp.
+Original five repetitions and all seven methods retained. Rep1 illustrative
+by prior designation. Extra reps start at6, distinct new_012 cohort; main
+summaries retain original_011 cohort. No parameter search or tuning.
+
+Reference fixed before metrics: z=(.70,.70), role=anchor in 011 independent
+geometry audit. Archive exact provenance, selected-policy holdout and direct
+hard-max values separately. Rebuild each original trace bank using its exact
+seed and n=1000 and evaluate this reference with max of policy sample means.
+Check archived objective reconstruction at several known iterates. Thresholds
+compare reference and iterates on the SAME bank, with identical estimator.
+High-precision 50000-path audit reported separately, never used as a threshold
+against the 1000-path traces. Optional recomputation uses new common banks
+and a separate configuration/output; original values remain untouched.
+
+Decision z^t is AFTER t projected updates. t0 is before consuming search data:
+B(0)=0 for every method. Fixed consumes one500-path bank at update1, then
+B(t)=500. Other methods consume500 new current paths per update: B(t)=500t.
+Green historical rewards are NOT simulated again; bank count=t. PSoft B300
+resamples reward columns, not the system. Record new policy-path simulations
+and LR/history operations separately. Original combined driver shares primitive
+banks and caches identical decisions across algorithms; its physical calls
+are audited separately and are not summed as standalone method budgets.
+
+Original 011 has no cumulative per-iteration search times. Measure necessary
+replays separately, sequential methods, BLAS1, no parallel evaluation work
+at the same time; compile/warm up beforehand. Rotate method order by rep.
+Use EXACT original model, seed streams, estimator calls, reductions, projected
+step, 500paths,45jobs,100updates. Require bitwise-identical all101 decisions
+and raw gradients to archives. Timing is new controlled replay data, not
+recovered original/concurrent timestamps or additional independent replicates.
+Charge generation, materialization, policy simulation, gradient computation,
+bootstrap and update separately. Total includes bootstrap once. Extra calls
+for warmup/evaluation excluded from search budgets and recorded separately.
+The isolated method wrapper retains original local_data call even for Green,
+then calls original green_data; report this extra score work. OS/GC/cache and
+one timing observation per seed limit benchmark claims.
+
+Threshold tolerances [.5,1,2]; optional relative .05*(Jref-Jinitial), if positive.
+First hit: min t with J(z^t)>=Jref-eps. Sustained run: first five consecutive
+qualifying decisions, start a and confirmation a+4. Store both. Sustained
+CDF/RMST use CONFIRMATION time (observable stopping time), not a retrospective
+start; budget/time at both start and confirmation retained. Never-hit tau is
+missing, event=false, administrative censor at100 updates. Hit at0 explicitly
+identified. CDF includes all reps, never successful-only denominator. Iteration
+RMST to100 averages min(tau,100); censored100 is an RMST contribution, NOT an
+imputed hitting time. Median identifiable only if >=50% attain. Runtime mean
+among successes explicitly labeled conditional, with success fraction; never
+presented as a full-population hitting mean.
+
+A(T)=sum_{t=0}^T J(z^t)/(T+1); R(T)=Jref-A(T); include t0, retain negative
+point/accumulated deficits. Horizons20/50/100. These are descriptive visited-
+decision quality, not realized operational rewards. SD across five seeds is
+not MC SE. Main trace hard-max is biased upward in finite samples; paired SE
+conditional on selected policy indices is descriptive.
+
+Independently validate candidate first hits, their preceding decision, and
+all five decisions of candidate sustained runs on new CRN banks of5000 paths
+per repetition. Plans frozen from main trace BEFORE new validation values.
+Both reference and candidate use direct hard-max on same new bank. Do not
+infer a new full-trajectory tau from this selected subset. Report threshold
+classification changes, paired SE and complete-window validation separately.
+These checks remain noisy and do not prove population attainment.
+
+Plots in English, PNG+PDF. Fixed budget plots use a vertical column/points at
+500 and mark the100-update endpoint; no fictitious500t curve. Budget CDF for
+Fixed is a marker at500 (after at most100 updates), not a wall-clock guarantee.
+Runtime plots use actual measured per-update cumulative times, no invented
+interpolated timestamp. Mean-time coordinates, if shown, are indexed by
+iteration, not estimates at a common wall-clock time.

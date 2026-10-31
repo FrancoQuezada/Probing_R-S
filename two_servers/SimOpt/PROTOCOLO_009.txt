@@ -1,0 +1,132 @@
+009: regímenes paramétricos, protocolo fijado antes del piloto
+
+Objetivo preservado: J(z)=max_i E_z[Y_i]−ALPHA'z, 144 políticas ex ante,
+z=(z3,z4)∈[0,1]^2. Se reutilizan estructuras, Softmax, PSoft y projected_step
+validados. Los archivos 002–008, SimOpt* y sus resultados no se modifican.
+ModelConfig es inmutable; cada generador, reward, LR, score y oracle recibe cfg.
+Green verifica identificador y hash del modelo de TODOS sus bancos históricos.
+Las probabilidades/logaritmos/derivadas repetidas se precalculan conservando
+exactamente el orden original de adición por trabajo. No hay self-normalized LR.
+
+Factorial 2x2x2: señales A0 originales / A1 hit3=.55 hit4=.65 false3=.20
+false4=.25; interarrival B0=.80 / B1=.60; routing rápido C0=.70 / C1=1.40.
+Todos los otros parámetros y las 144 políticas permanecen fijos según solicitud.
+scenarios.csv registra íntegramente los ocho modelos.
+
+Fase I: 9 puntos {0.1,0.5,0.9}² más Z0=(.12,.10). Dos bancos de referencia
+independientes A/B de 3000 caminos, comunes por CRN a todos los puntos de cada
+escenario. A ordena candidatos y define epsilon-óptimos nominales; B verifica
+incertidumbre de referencia y estima gradientes y routing. Nunca se usan
+resultados de búsqueda para caracterizar o seleccionar escenarios.
+
+Epsilon preestablecido: .50 unidades de reward por camino. El conjunto nominal
+contiene i con max(mean_A)−mean_A_i<=.50. No se afirma que sea el conjunto óptimo
+poblacional. En B se construyen IC simultáneos t/Bonferroni de TODAS las 10296
+diferencias emparejadas de políticas. Sus máximos producen límites de regret por
+política: certified_inside si upper_regret<=epsilon, certified_outside si
+lower_regret>epsilon, reference_ambiguous en otro caso. La cobertura es aproximada
+por CLT y no una garantía exacta de optimalidad. Se separa selección fuera del
+conjunto nominal de selección certificadamente fuera y pertenencia ambigua.
+
+Equivalencia observacional: máximo desvío absoluto de rewards <=1e−8 en A y B.
+Se registran grupos de políticas equivalentes en las muestras; no se afirma
+identidad poblacional ni de routing. Los empates dentro de esos grupos no se
+interpretan como errores. Se conserva argmax original para seleccionar, junto
+con número de empates numéricos y estadísticas agregadas por grupo equivalente.
+
+Selección: 100 bancos INDEPENDIENTES por tamaño n=50,100,500 en cada punto.
+Sus semillas son independientes de A/B y de búsquedas. Se guardan todas las
+elecciones, frecuencias, entropía, número de políticas/grupos seleccionados,
+error nominal y su IC Wilson, error certificado y ambigüedad de referencia.
+El error estándar utiliza caminos completos como observaciones, nunca trabajos.
+
+Principales políticas: cinco mejores en A, ganadora en B y representantes de
+los dos grupos más seleccionados con n=500. Se reportan todos sus pares.
+Gradientes G_i=mean(Y_i*score) en B, SE por componente y SE emparejados de G_i−G_j.
+Se usan rectángulos t/Bonferroni por par para las seis componentes (dos de cada
+G y dos del delta). Producen límites conservadores de norma y diferencia relativa
+||Gi−Gj||/max(||Gi||,||Gj||,1). Coseno indefinido si una norma<=1e−8.
+Bootstrap conjunto de caminos B=300 para IC descriptivos de cosenos y diferencias
+de pasos proyectados en k=1 y k=100; restar ALPHA una vez. Los pares elegidos a
+partir de muestras finitas tienen incertidumbre; los diagnósticos estructurales
+son exploratorios y no pruebas confirmatorias de los algoritmos.
+
+Routing: cada política evoluciona sus propias colas sobre los mismos caminos B.
+Se guardan desacuerdo por trabajo, SE por camino, proporción enviada al rápido,
+utilización busy_fast/makespan por camino, espera, costos, reward y diferencias.
+DELAY_PENALTY cobra tiempo total en sistema, como el código original, sin due date.
+
+Clasificación operacional PREESPECIFICADA por punto (n=500):
+R1: grupo modal>=.90, límite inferior Wilson>=.80, coincide con ganadores A y B,
+modal certificado epsilon-óptimo y StandardizedGap_A>=3 al primer grupo distinto.
+Un único grupo observado en todas las políticas también es R1.
+Selección incierta: grupo modal<=.80, límite superior Wilson<=.90 y segundo grupo
+con frecuencia>=.05. Se estudia el par de representantes de esos dos grupos.
+R2: selección incierta, límite superior de diferencia relativa de gradiente<=.20
+y límite inferior bootstrap del coseno>=.95.
+R3: selección incierta y límite inferior relativo>.20, o coseno superior<.90 junto
+con límite inferior de ||deltaG||>0. No basta una diferencia puntual ruidosa.
+Los restantes casos quedan indeterminados; no se fuerzan a R1/R2/R3.
+
+Etiqueta del escenario en la grilla: R3 si contiene al menos un punto R3; si no,
+R2 si contiene un punto R2; R1 si TODOS sus puntos son R1; si no, indeterminado.
+Esta etiqueta describe presencia en la grilla, no uniformidad para todo z.
+Se elige hasta un escenario por etiqueta disponible: mayor número de puntos de
+esa etiqueta, luego mayor incertidumbre (R2/R3) o estabilidad (R1), luego ID.
+Se añade siempre S000, sin duplicarlo. Si faltan regímenes se informa; no se
+alteran parámetros. selected_scenarios.toml se congela ANTES del piloto e incluye
+el hash de los indicadores estructurales usados. No se reemplaza tras ver ganancias.
+
+Fase II: Fresh, Softmax beta=.50, PSoft B=300, Green, Green+Softmax beta=.50.
+Piloto: ocho escenarios x5 repeticiones, exploratorias.
+Confirmación: S000 y seleccionados estructuralmente x20 repeticiones NUEVAS.
+No se mezclan datos piloto y confirmatorios. --confirm --all-scenarios permite
+ampliar posteriormente a los ocho, reutilizando repeticiones confirmatorias válidas.
+Cada método usa 500 caminos x100 iteraciones, 45 trabajos/camino, Z0=(.12,.10),
+eta=.035/sqrt(k), clip componente ±15, proyección [0,1]^2, sin early stopping.
+Primitivas CRN comunes por escenario/repetición/iteración; cada método reconstruye
+las señales bajo su propio punto. Historia Green exclusiva del escenario.
+
+Semillas SHA-256 de Probing009-v1/escenario/fase/repetición/flujo/iteración,
+60 bits iniciales+1. Flujos independientes para referencias, bancos de selección,
+gradientes bootstrap, piloto, confirmación, búsqueda, bootstrap PSoft, selección
+final y holdout. Se registran semillas y se audita ausencia de colisiones.
+
+Convergencia: checkpoints 0,1,5,10,20,...,100; un banco CRN de 1000 caminos por
+escenario y fase, compartido por TODOS los métodos y repeticiones de esa fase.
+Es independiente de las búsquedas y finales. Sus bandas describen optimización
+condicional a ese banco común; no se usan para inferencia final. Se cachea cada
+punto exacto por configuración/semillas para no recalcular evaluaciones idénticas.
+Finales: selector de 5000 caminos y holdout INDEPENDIENTE de 30000 por repetición,
+CRN entre métodos. Holdout es calidad de la política elegida (métrica principal).
+Máximo muestral directo se informa aparte, con posible sesgo optimista de selección.
+Se conserva la familia original y no se sustituye max(EY) por E(max Y).
+
+Oracle: cada escenario tiene su propia grilla exploratoria 3x3; para confirmados
+se añade grilla 11x11 en [0,1]^2 con 3000 caminos directos CRN, independiente de
+búsqueda. --oracle-grid-n y --oracle-paths permiten más resolución. Nunca se usa
+el heatmap de S000 para escenarios modificados; no se usan LR para superficies.
+
+Comparaciones: Softmax−Fresh, PSoft−Fresh, GreenSoftmax−Green, Green−Fresh.
+IC t95% sobre diferencias entre repeticiones, SD, SE, proporción positiva.
+Holm dentro de escenario sobre 4 contrastes x2 estimandos; Holm adicional sobre
+TODOS los escenarios confirmados para conclusiones simultáneas. IC Bonferroni
+simultáneos adicionales. Piloto etiquetado exploratorio, nunca confirmatorio.
+Los costos instrumentados (búsqueda, bootstrap, evaluación) se separan y se
+registran con ocho hilos y BLAS=1; no son benchmarks aislados. Payloads idénticos
+se comparten, imputando a cada método su costo medido para comparabilidad.
+
+Relación estructura/desempeño: correlaciones descriptivas sobre los ocho promedios
+piloto, sin generalizaciones causales. Efectos factoriales A/B/C/AB/AC/BC/ABC
+de los deltas holdout: contraste +/-1 dividido por 4, SE Welch y df Satterthwaite,
+Holm entre los 28 efectos (7x4). Todos exploratorios en piloto. Si hay confirmación
+de los ocho escenarios, se estiman separadamente efectos confirmatorios.
+
+Reproducción: --quick-test usa presupuestos reducidos EXPLÍCITOS, nunca finales.
+Configuración científica completa y SHA de fuentes forman un fingerprint;
+se exige coincidencia al reanudar. Cambiar presupuestos requiere otro --output.
+Los contadores de repeticiones/escenarios son planes operacionales; ampliar su
+cobertura reutiliza tareas completas con la misma configuración y semillas.
+Checkpoints atómicos fsync/rename por punto, búsqueda completa y evaluación por
+método, además de cada repetición terminada. Una búsqueda interrumpida antes de
+guardar se reinicia; búsquedas/evaluaciones ya guardadas no se repiten.

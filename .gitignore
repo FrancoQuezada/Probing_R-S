@@ -1,0 +1,49 @@
+# Python / editor caches
+__pycache__/
+*.pyc
+.vscode/
+.ipynb_checkpoints/
+.DS_Store
+
+# Julia coverage / profiling artefacts
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+
+# NOTE: Manifest.toml files and all result directories (two_servers/SimOpt/resultados,
+# production_rework/assembly_line_model/experiment_outputs, ...) are deliberately NOT
+# ignored: they are reproducibility assets. SimOpt/resultados is ~49 GB; if this
+# repository is put under Git, track it with Git LFS or keep it outside the repository.
+
+# ==========================================
+# EXPERIMENTAL RESULTS
+# ==========================================
+
+# Two-server experimental results (49 GB)
+/two_servers/SimOpt/resultados/**
+
+# Preserve source code stored inside experiment folders
+!/two_servers/SimOpt/resultados/**/
+!/two_servers/SimOpt/resultados/**/code/**
+
+# Production and Rework results
+/production_rework/assembly_line_model/experiment_outputs/
+/production_rework/assembly_line_model/validation_outputs/
+
+# Other generated results
+/two_servers/lr_baseline_2d/results/
+
+# ==========================================
+# GENERATED FILES
+# ==========================================
+
+*.log
+*.tmp
+*.zip
+*.tar
+*.tar.gz
+.DS_Store
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
