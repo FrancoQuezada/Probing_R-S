@@ -1,0 +1,46 @@
+# Numerical protocol shared by all five instances: identical in the frozen configurations of experiments
+# 019 (I0252), 020 (L000, L025, L026, L030), 021 (Green Variance + Softmax) and 022 (Differential Evolution).
+# Instance-specific parameters live in instances/<ID>.toml.
+
+[search]                         # gradient methods
+Z0 = [0.12, 0.1]
+max_iters = 100
+n_paths = 500                    # new primitive paths per iteration (one bank)
+jobs = 45                        # jobs per sample path
+BASE_STEP = 0.035                # step = BASE_STEP / sqrt(k)
+GRAD_CLIP = 15.0                 # per-coordinate gradient clip, then projection onto [0,1]^2
+beta_softmax = 0.5               # Green Softmax and Green Variance + Softmax
+filter_kappa = 2.0               # Filter2 threshold multiplier (Green Variance)
+policies = 144
+
+[evaluation]                     # identical for all six methods
+trace_paths = 1000               # every visited z on one fixed direct-CRN bank per replication
+selection_paths = 10000          # final: independent policy-selection bank
+holdout_paths = 50000            # final: independent holdout of the selected policy
+
+[seeds]
+rep_offset = 19000000            # replication r uses seed id 19000000 + r (DE optimizer seed uses r)
+replications = 50                # replications in the archived campaigns
+
+[differential_evolution]         # experiment 022
+package = "BlackBoxOptim"
+version = "0.6.12"
+method = "adaptive_de_rand_1_bin_radiuslimited"
+population_size = 20
+paths_per_evaluation = 500
+max_objective_evaluations = 100  # includes the initial evaluation at Z0
+
+[surface]                        # optional direct-CRN objective surface (archived reference protocol)
+grid = 21                        # range(0, 1; length = grid) in each coordinate
+paths = 5000
+
+[quick]                          # --quick: smaller budgets only (smoke tests; NOT scientific results)
+max_iters = 5
+n_paths = 50
+trace_paths = 100
+selection_paths = 500
+holdout_paths = 1000
+de_max_objective_evaluations = 10
+de_paths_per_evaluation = 50
+surface_grid = 5
+surface_paths = 100

@@ -1,0 +1,26 @@
+# Instance L025. [model] is copied programmatically (full precision) from the frozen configuration
+#   two_servers/SimOpt/resultados/020probing_four_instances_statistical/L025/config/L025.toml  (SHA-256 8d823ba7f81e80283f5ad23e224ead7cc90f12d5a6ddcbdeba047d37cadc62aa)
+# identical in experiments 020/021/022.
+id = "L025"
+
+[model]
+ACTIVE_CLASSES = [3, 4]
+ALPHA = [5.0, 2.25]
+BETA = 4.0
+DELAY_PENALTY = 0.84
+FAST_MEAN = [0.75, 1.8]
+FAST_ROUTING_COST = 0.7
+MEAN_INTERARRIVAL = 0.8
+NCLASS = 4
+P_COMPLEX = [0.02, 0.12, 0.45, 0.7]
+P_FALSE0 = [0.05, 0.08, 0.15, 0.2]
+P_HIT0 = [0.6, 0.65, 0.75, 0.92]
+REVENUE_SCALE = 8.0
+STD_MEAN = [1.0, 12.0]
+
+[seeds]  # original stream conventions; the instance id is part of every seed string
+seed_prefix = "Probing010-v1/L025/compare"   # replication r: <prefix>/<19000000+r>/<stream>/<k>
+de_seed_prefix = "DE022-v1/L025/statistical"  # DE optimizer: <prefix>/<r>/optimizer
+
+[surface]  # archived reference surface: resultados/022_differential_evolution/L025/config/L025_reference_surface.csv
+seed_string = "Probing010-v1/shared/high/0/surface/0"   # 010 landscape search, stage high
