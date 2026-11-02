@@ -1,0 +1,70 @@
+generated_by = "test/make_reference.jl"
+instance = "I0252"
+julia = "1.11.7"
+model_sha256 = "1ecdc3dc6161f7783a79a4e9d575f1f753a6fbb1ff4fb0d9337af56d5da54fd7"
+policy_grid_sha256 = "cd1778068d6fd5af6ab2b569c57f40d3900aba61aa6c04db7569d09127bf18d6"
+
+[archived_rep1."differential_evolution_final.csv"]
+sha256 = "06349cdd820a3e6da9527e92c13b075c301fc7db61309980992640b15bd5472d"
+source = "two_servers/SimOpt/resultados/022_differential_evolution/I0252/raw/differential_evolution/rep_0001/final.csv"
+
+[archived_rep1."differential_evolution_trajectory.csv"]
+sha256 = "0549732a0b94f33583ae214435171ac7557759b1b962d9d78965bac09728e3ce"
+source = "two_servers/SimOpt/resultados/022_differential_evolution/I0252/raw/differential_evolution/rep_0001/trajectory.csv"
+
+[archived_rep1."fresh_final.csv"]
+sha256 = "6dc9577d879a78b3dc41110d1aa92d7b00c1cc313062a29d4f27701937149f36"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/fresh/rep_0001/final.csv"
+
+[archived_rep1."fresh_trajectory.csv"]
+sha256 = "ef0e6017e2f467578e75c80b734c0fcb016dcc212809ce9ae657d1cbceb2e53a"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/fresh/rep_0001/trajectory.csv"
+
+[archived_rep1."green_final.csv"]
+sha256 = "72ab19e4ef25c52352b48254df07c5a9aa63d72b8742b83db7d13248c0fcb14c"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green/rep_0001/final.csv"
+
+[archived_rep1."green_softmax_final.csv"]
+sha256 = "14f7d756c4d1669dcaa41460750716dd357b37285e2c0e51720267233af24aac"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green_softmax/rep_0001/final.csv"
+
+[archived_rep1."green_softmax_trajectory.csv"]
+sha256 = "3a00fb46d98abe8208b4d149d36839ecacc75adbba5e548ba11f38d6e9fd3aac"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green_softmax/rep_0001/trajectory.csv"
+
+[archived_rep1."green_trajectory.csv"]
+sha256 = "6cd404d001686a73f2488553c2c538a684b5c309b356e8051d9fc4f269957eed"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green/rep_0001/trajectory.csv"
+
+[archived_rep1."green_variance_final.csv"]
+sha256 = "c0af84193a9ea0aa8ae8b5f522fb738aa9b4e30b84c7aff795202910da5b685e"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green_variance/rep_0001/final.csv"
+
+[archived_rep1."green_variance_softmax_final.csv"]
+sha256 = "48270682328c700e9fc60da70b37588e949311c2967fe157a2310cd5d4930793"
+source = "two_servers/SimOpt/resultados/021_green_variance_softmax/I0252/raw/green_variance_softmax/rep_0001/final.csv"
+
+[archived_rep1."green_variance_softmax_trajectory.csv"]
+sha256 = "cb09f7cd07a799a1a438ad69cdf7024a99805523101f36479f621429dd061f6b"
+source = "two_servers/SimOpt/resultados/021_green_variance_softmax/I0252/raw/green_variance_softmax/rep_0001/trajectory.csv"
+
+[archived_rep1."green_variance_trajectory.csv"]
+sha256 = "4a0d67128025eba86c9065db612b8c0ab7082af4f55c649a2e57be39836171e3"
+source = "two_servers/SimOpt/resultados/019probing_i0252_four_methods_statistical/raw/green_variance/rep_0001/trajectory.csv"
+
+[archived_rep1."reference_surface.csv"]
+sha256 = "1d5752d92ef87e1f7b5fde2bbf3fe36413d80f388151273884673e0dd4df6e11"
+source = "two_servers/SimOpt/resultados/022_differential_evolution/I0252/config/I0252_reference_surface.csv"
+
+[original_sources]
+"003probing_four_searches_softmax.jl" = "cb084d435519328e77972b17812c9117d42b761d085ccaa4bd254af12e6e0a98"
+"010probing_instance_landscape_search.jl" = "8706ca29dae92acd05c31438420e70b9c1baf1c11338d8dbc8f71df35f9e2127"
+"011probing_high_contrast_interior.jl" = "cee84dfe5bf305c05ad146b2756dc484143f7f2b13c1cc014e9f2f87d26ec2a8"
+"012probing_anytime_budget_analysis.jl" = "109c4b80e0481450a35e3cc1f3629c2cb2f5457c4b2640bd02b1b1a83e8c0df2"
+"016probing_green_bank_variants.jl" = "ce1fcd4641356e6a962dd14fcec1d952fed98e14e3decadb428e004225def6cf"
+"019probing_i0252_statistical.jl" = "7f1ea940d8a3935dd9e109e07ff1ad83056b9917957b536098b5625657c9cdef"
+"022_differential_evolution.jl" = "ad49b89f06c61dc5cbda0487d76e23c825c0e3cca5fdb7928d555064fce0bbf9"
+"probing_anytime_012_runtime.jl" = "701cecf5997855e4747861f2bbf9a101d5d3d246e54e97a4aa55ef9d639f9b3e"
+"probing_experiments_common.jl" = "19dad6ab58eed40cfba60da10cba85e6dacb1c2f0ba866b0225fd865baf7227a"
+"probing_interior_011_diagnostics.jl" = "adb3fb034f2661aaccc98fb166d60b8abc336c8a95d18787d23cc5182e2f8843"
+"probing_regime_model.jl" = "0718f39a48375f7dba522ce21c5765effefd04700b5767634f2eb5cb22fd872d"
